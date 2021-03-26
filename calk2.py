@@ -29,14 +29,11 @@ for i, letter in enumerate(INPUT):
         index = len(operations)
         variables[index] = variables[index] + letter
 
-
-
 for i in range(max(len(variables), len(operations))):
     if i < len(variables):
         stroka.append(variables[i])
     if i < len(operations):
         stroka.append(operations[i])
-
 
 for i, l in enumerate(stroka):
     if 'sqrt' in l and '-' in l:
@@ -65,18 +62,15 @@ for i, l in enumerate(stroka):
 
 stroka.clear()
 
-
 for i in range(max(len(oper), len(operand))):
     if i < len(oper):
         stroka.append(str(oper[i]))
     if i < len(operand):
         stroka.append(str(operand[i]))
 
-
 for i, l in enumerate(stroka):
     if '-' in str(l) and ('1' in str(l) or '2' in str(l) or '3' in str(l) or '4' in str(l) or '5' in str(l) or '6' in str(l) or '7' in str(l) or '8' in str(l) or '9' in str(l)):
         stroka[i] = str('(0' + stroka[i] + ')')
-
 
 INPUT = ''.join(stroka)
 
@@ -106,7 +100,6 @@ while stack != []: OUTPUT, stack = [stack[0]] + OUTPUT, stack[1:]
 
 print('инфиксная запись:\t%s' % (INPUT))
 print('постфиксная запись:\t%s' % (" ".join(reversed(OUTPUT))))
-
 
 for i, l in enumerate(OUTPUT):
     if '^' in str(l) and '^' in str(OUTPUT[i+2]):
@@ -144,7 +137,6 @@ for i in OUTPUT.split():
             polskiu.append(z / g)
     else:
         polskiu.append(str(i))
-
 
 if result == 'inf':
     print(result)
