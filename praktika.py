@@ -1,108 +1,119 @@
 """
-хотим калькулятор выражений -2 +3.5 * 2 - 3 ^ 2
+хотим калькулятор выражений -2 + 3.5 * 2 - 3 ^ 2
 """
 #считать строчку от пользователя
-instr = input ('Pleae, enter your task: ')
+instr = input('Что вычислять?')
 
 #почистить строку
-# "-2 +3.5 * 2 - 3 ^ 2" -> "-2+3.5*2-3^2"
-instr = instr.replace(' ', '')
+#"-2 + 3.5 * 2 - 3 ^ 2" -> "-2+3.5*2-3^2"
+instr = instr.replace(' ','')
 
 #распарсить
+
 """
 на вход строку
-"-2+3.5*2-3^2"
-на выход ?структура данных? с операциями +- и значениями
-(+*-)
+(+ * - ^)
 (-2 3.5 2 3 2)
-[{'opr: , 'val': -2}, {}, ...]
+[{'opr': '', 'val': -2}, {'opr': +, 'val': 3,5}, {'opr': *, 'val': 2}, ...]
+на выход список словарей с операциями +-*/^ и числами
 """
-
 hp_ops = tuple('^')
-mp_ops = ('*','/')
+mp_ops = ('*', '/')
 lp_ops = tuple('+-')
 supported_ops = hp_ops + mp_ops + lp_ops
-digital_chars = tuple ('0123456789.-')
+digit_chars = tuple('0123456789.-')
 
-actions = list ()
+actions = []
 d = dict()
-d['opr']='First'
-d['val']= ''
+d['opr'] = 'First'
+d['val'] = ''
 actions.append(d)
-print(actions)
 
-#премся по строчке, карент -- текущее, делим на операции и числа
-#пока не понимаю, какой алгоритм с отрицательными числами
+for i, letter in enumerate(instr):
+    if letter in supported_ops and (i > 0) and actions[-1]['val'] != '':
+        """блок под операции"""
+        actions.append({'opr': letter, 'val': ''})
 
-i=0
-for i, letter in enumerate(instr): 
-    if letter in supported_ops: 
-        actions.append ({'opr': letter, 'val': ''})
-    
-    elif letter in digital_chars:
-        actions [-1]['val'] += letter
- 
-print (actions)
-
+    elif letter in digit_chars:
+        """блок под числа"""
+        actions[-1]['val'] += letter
 
 #вычислить операции 1го приоритета (возведение в степень)
+
 """
-на вход наш набор значений и операций
+на вход наш набор значение и операции
 на выход обновленная ?структура данных? с операциями +- и значениями
-2+3.5*2-3^2
-2+3.5*2-9
+-2 + 3.5 * 2 - 3 ^ 2
+-2 + 3.5 * 2 - 9
 """
-
-
 i = 0
-while i < len(actions):
-	action = actions[i]
-	operation = action.get('opr')
-	if operation == hp_ops[0]:
-	    if operation == '^':
-		pre_res = float(actions[i-1].get('val')) ** float(action.get('val'))
-		actions[i+1]['val'] = str(pre_res)
-		del renove[i]
-	else:
-		i += 1
 actions.reverse()
-	
-   # pass
+while i < len(actions):
 
-
+    """проверить операции в действии на соответсвие операции первого приоритета
+    если она не соответвует, то ничего не делаем
+    если она соответствует, то:
+        -вычисляем результат для числа в этом лействии и соседе слева
+        -записать результат в соседе СПРАВА
+        -удалить текущее действие
+    """
+    action = actions[i]
+    operation = action.get('opr')
+    if operation in hp_ops:
+        if operation == '^':
+            pre_res = float(actions[i+1].get('val')) ** float(action.get('val'))
+            actions[i+1]['val'] = str(pre_res)
+            del actions[i]
+    else:
+        i += 1
+actions.reverse()
 
 #вычислить операции 2го приоритета (умножение и деление)
+
 """
-на вход наш набор значений и операций
+на вход наш набор значение и операции
 на выход обновленная ?структура данных? с операциями +- и значениями
--2+3.5*2-9
-2+7-9
+-2 + 3.5 * 2 - 9
+-2 + 7 - 9
 """
 i = 0
-result = None
+result = '0'
+error = False
 while i < len(actions):
-	action = actions[i]
-	operation = action.get('opr')
-	if operation in np_ops:
-	    if float(action.get('val')) == 0 and operation == '/':
-	     pass
-	else:
-		i += 1
-actions.reverse()
-print(actions)
+
+    """проверить операции в действии на соответсвие операции второго приоритета
+    если она не соответвует, то ничего не делаем
+    если она соответствует, то:
+        -вычисляем результат для числа в этом лействии и соседе слева
+        -записать результат в соседе СЛЕВА
+        -удалить текущее действие
+    """
+    action = actions[i]
+    operation = action.get('opr')
+    if operation in mp_ops:
+        if float(action.get('val')) == 0 and operation == '/':
+            result = 'Inf'
+            error = True
+        else:
+            eval_str = actions[i-1].get('val') + operation + action.get('val')
+            pre_res = eval(eval_str)
+            actions[i-1]['val'] = str(pre_res)
+        actions.pop(i)
+    else:
+        i += 1
 
 #вычислить операции 3го приоритета (сложение и вычитание)
-# -2+7-9 = -4
+#-2 + 7 - 9 = -4
 
-for action in actions:
-    if type(result)
-        break
-    var_A = result
-    var_B = action.get('opr')
-    if operation in lp_opr:
-        result = eval(val_A + operation + var_B)
-    else:
-        result = var_B
+if not error:
+    for action in actions:
+        var_A = result
+        var_B = action.get('val')
+        operation = action.get('opr')
+        if operation in lp_ops:
+            result = str(eval(var_A + operation + var_B))
+        else:
+            result = var_B
 
 #вывести результат
-print("Result: " + str(result))
+print('Результат: {}'.format(result))
